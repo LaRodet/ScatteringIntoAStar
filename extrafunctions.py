@@ -44,9 +44,10 @@ def find_qmin(m, brH, e, h, qcross, apcross, ap1, ap2, verbose):
             aux = [1.,1.]
         else:
             aux = [f(q, ap, a, qp), df(q, ap, a, qp)]
+        # print(q, aux)
         return(aux)
 
-    sol = root(fvec, [qcross, apcross])
+    sol = root(fvec, [qcross, apcross], method="lm")
     success = sol.success
     if success:
         if verbose:
@@ -96,8 +97,9 @@ def find_rightapcross(m, brH, e, h):
         qcross = 2*across - qpcross*(1-brH)
         # print(f"apcross = {apcross}")
     else:
-        print("Unable to find apcross")
-        quit()
+        apcross = np.nan
+        qcross = np.nan
+        # quit()
     return(apcross, qcross)
 
 def compute_rightbranch(m, brH, e, h, apcross, qcross):

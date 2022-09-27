@@ -18,13 +18,12 @@ eps = 1e-10 #small quantity
 
 ### Parameters
 rH = (1e-3/3)**(1/3) #dimensionless Hill radius
-beta = 2 #extent of the chaotic zone accessible after scattering in unit of rH
-m = 0.1 #mass of the planetesimal
+beta = 3 #extent of the chaotic zone accessible after scattering in unit of rH
 
 verbose = False
 
-mrange = np.logspace(-4, 0, 1000)
-a0 = 1 + 2*rH
+mrange = np.logspace(-4, -0.1, 100)
+a0 = 1 + beta*rH
 e0 = 0.
 i0 = 0.
 ep0range = [0., 0.02, 0.1, 0.2, 0.5]
@@ -91,10 +90,18 @@ for ep0 in ep0range:
                 ap2 = 1.
 
             apcross, qcross = find_rightapcross(m, beta*rH, e, h)
-            if verbose:
-                print(f"qcross = {qcross}, apcross = {apcross}")
+            if not np.isnan(apcross):
+                if verbose:
+                    print(f"qcross = {qcross}, apcross = {apcross}")
 
-            qmin[j] = find_qmin(m, beta*rH, e, h, qcross, apcross, ap1, ap2, verbose)[1]
+                qmin[j] = find_qmin(m, beta*rH, e, h, qcross, apcross, ap1, ap2, verbose)[1]
+                # if np.isnan(qmin[j]):
+                    # print(m)
+                    # quit()
+            else:
+                if verbose:
+                    print("Unable to find apcross")
+                qmin[j] = np.nan
 
             # if verbose:
                 # print(f"qmin = {qmin[j]}")
@@ -102,7 +109,7 @@ for ep0 in ep0range:
     plt.plot(mrange, qmin, label=r"$e_{\rm p,0} = %s$" % ep0)
 
 plt.xscale('log')
-
+plt.title(r"$\beta~r_{\rm H} = %.2f$" % (beta*rH))
 plt.legend()
 plt.margins(x=0)
 plt.ylim(ymin=0)
